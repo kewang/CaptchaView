@@ -1,4 +1,4 @@
-package com.example.captcha;
+package tw.kewang.ui.captcha;
 
 import android.app.Activity;
 import android.os.Bundle;

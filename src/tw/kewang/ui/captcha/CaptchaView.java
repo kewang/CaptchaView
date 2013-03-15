@@ -1,4 +1,4 @@
-package com.example.captcha;
+package tw.kewang.ui.captcha;
 
 import java.security.SecureRandom;
 
