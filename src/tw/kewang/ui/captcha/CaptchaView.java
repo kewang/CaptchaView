@@ -6,14 +6,20 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * @author kewang
+ */
 public class CaptchaView extends TextView {
 	private static final Typeface[] TYPEFACES = { Typeface.DEFAULT,
 			Typeface.DEFAULT_BOLD, Typeface.MONOSPACE, Typeface.SANS_SERIF,
 			Typeface.SERIF };
+	private static final Style[] STYLES = { Style.FILL, Style.FILL_AND_STROKE,
+			Style.STROKE };
 
 	private String captcha;
 	private Paint paint;
@@ -41,16 +47,22 @@ public class CaptchaView extends TextView {
 		paint = new Paint();
 		random = new SecureRandom();
 
-		buildPaint();
 		buildCaptcha();
 	}
 
+	/**
+	 * get captcha string
+	 * 
+	 * @return
+	 */
 	public String getCaptcha() {
 		return captcha;
 	}
 
+	/**
+	 * refresh captcha string
+	 */
 	public void refresh() {
-		buildPaint();
 		buildCaptcha();
 
 		invalidate();
@@ -61,8 +73,7 @@ public class CaptchaView extends TextView {
 		int width = getMeasuredWidth();
 		int height = getMeasuredHeight();
 
-		canvas.drawColor(Color.rgb(random.nextInt(256), random.nextInt(256),
-				random.nextInt(256)));
+		canvas.drawColor(getColor());
 
 		// text
 		for (int i = 0; i < 4; i++) {
@@ -70,51 +81,47 @@ public class CaptchaView extends TextView {
 			int x = width / 4 * i;
 			int y = 100;
 
-			paint.setTypeface(TYPEFACES[random.nextInt(5)]);
-
 			canvas.save();
 
 			canvas.rotate(random.nextInt(180) - 90, x, y);
+
+			paint.setColor(getColor());
+			paint.setAntiAlias(true);
+			paint.setTextSize(100);
+			paint.setStyle(STYLES[random.nextInt(3)]);
+			paint.setTypeface(TYPEFACES[random.nextInt(5)]);
+
 			canvas.drawText(s, x, y, paint);
 
 			canvas.restore();
 		}
 
 		// line
-		Paint linePaint = new Paint();
-		for (int i = 0; i < 10; i++) {
-			linePaint.setColor(Color.rgb(random.nextInt(256),
-					random.nextInt(256), random.nextInt(256)));
-			linePaint.setAntiAlias(true);
-			linePaint.setStrokeWidth(random.nextInt(5));
-			linePaint.setStyle(Paint.Style.STROKE);
+		for (int i = 0; i < width * height * 0.00005; i++) {
+			paint.setColor(getColor());
+			paint.setAntiAlias(true);
+			paint.setStrokeWidth(random.nextInt(5));
+			paint.setStyle(STYLES[random.nextInt(3)]);
 
 			canvas.drawLine(random.nextInt(width), random.nextInt(height),
-					random.nextInt(width), random.nextInt(height), linePaint);
+					random.nextInt(width), random.nextInt(height), paint);
 		}
 
 		// dot
-		Paint dotPaint = new Paint();
 		for (int i = 0; i < width * height * 0.005; i++) {
-			dotPaint.setColor(Color.rgb(random.nextInt(256),
-					random.nextInt(256), random.nextInt(256)));
-			dotPaint.setStrokeWidth(3);
-			dotPaint.setAntiAlias(true);
-			dotPaint.setStyle(Paint.Style.STROKE);
+			paint.setColor(getColor());
+			paint.setStrokeWidth(3);
+			paint.setAntiAlias(true);
+			paint.setStyle(STYLES[random.nextInt(3)]);
 
 			canvas.drawPoint(random.nextInt(width), random.nextInt(height),
-					dotPaint);
+					paint);
 		}
 	}
 
-	private void buildPaint() {
-		int color = Color.rgb(random.nextInt(256), random.nextInt(256),
+	private int getColor() {
+		return Color.rgb(random.nextInt(256), random.nextInt(256),
 				random.nextInt(256));
-
-		paint.setColor(color);
-		paint.setAntiAlias(true);
-		paint.setTextSize(100);
-		paint.setStyle(Paint.Style.STROKE);
 	}
 
 	private void buildCaptcha() {
