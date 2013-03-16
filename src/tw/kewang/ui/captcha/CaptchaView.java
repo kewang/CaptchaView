@@ -15,13 +15,17 @@ import android.widget.TextView;
  * @author kewang
  */
 public class CaptchaView extends TextView {
+	private static final int LENGTH_DEFAULT = 4;
+	private static final String PATTERN_DEFAULT = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private static final Typeface[] TYPEFACES = { Typeface.DEFAULT,
 			Typeface.DEFAULT_BOLD, Typeface.MONOSPACE, Typeface.SANS_SERIF,
 			Typeface.SERIF };
 	private static final Style[] STYLES = { Style.FILL, Style.FILL_AND_STROKE,
 			Style.STROKE };
 
-	private String captcha;
+	private String pattern;
+	private StringBuffer captcha;
+	private int length;
 	private Paint paint;
 	private SecureRandom random;
 
@@ -46,6 +50,10 @@ public class CaptchaView extends TextView {
 	private void init() {
 		paint = new Paint();
 		random = new SecureRandom();
+		captcha = new StringBuffer();
+
+		pattern = PATTERN_DEFAULT;
+		length = LENGTH_DEFAULT;
 
 		buildCaptcha();
 	}
@@ -56,7 +64,7 @@ public class CaptchaView extends TextView {
 	 * @return
 	 */
 	public String getCaptcha() {
-		return captcha;
+		return captcha.toString();
 	}
 
 	/**
@@ -68,26 +76,41 @@ public class CaptchaView extends TextView {
 		invalidate();
 	}
 
+	/**
+	 * set pattern
+	 * 
+	 * @param pattern
+	 */
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		int width = getMeasuredWidth();
 		int height = getMeasuredHeight();
+		int times;
 
 		canvas.drawColor(getColor());
 
+		paint.setAntiAlias(true);
+
 		// text
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < length; i++) {
 			String s = String.valueOf(captcha.charAt(i));
-			int x = width / 4 * i;
+			int x = width / length * i;
 			int y = height / 2;
 
 			canvas.save();
 
-			canvas.skew(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f);
 			canvas.rotate(random.nextInt(180) - 90, x, y);
+			canvas.skew(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f);
 
 			paint.setColor(getColor());
-			paint.setAntiAlias(true);
 			paint.setTextSize(100);
 			paint.setStyle(STYLES[random.nextInt(STYLES.length)]);
 			paint.setTypeface(TYPEFACES[random.nextInt(TYPEFACES.length)]);
@@ -98,9 +121,9 @@ public class CaptchaView extends TextView {
 		}
 
 		// line
-		for (int i = 0; i < width * height * 0.00005; i++) {
+		times = (int) (width * height * 0.00005);
+		for (int i = 0; i < times; i++) {
 			paint.setColor(getColor());
-			paint.setAntiAlias(true);
 			paint.setStrokeWidth(random.nextInt(5));
 			paint.setStyle(STYLES[random.nextInt(STYLES.length)]);
 
@@ -109,10 +132,10 @@ public class CaptchaView extends TextView {
 		}
 
 		// dot
-		for (int i = 0; i < width * height * 0.005; i++) {
+		times = (int) (width * height * 0.005);
+		for (int i = 0; i < times; i++) {
 			paint.setColor(getColor());
 			paint.setStrokeWidth(3);
-			paint.setAntiAlias(true);
 			paint.setStyle(STYLES[random.nextInt(STYLES.length)]);
 
 			canvas.drawPoint(random.nextInt(width), random.nextInt(height),
@@ -126,6 +149,10 @@ public class CaptchaView extends TextView {
 	}
 
 	private void buildCaptcha() {
-		captcha = String.format("%1$04d", random.nextInt(10000));
+		captcha.setLength(0);
+
+		for (int i = 0; i < length; i++) {
+			captcha.append(pattern.charAt(random.nextInt(pattern.length())));
+		}
 	}
 }
