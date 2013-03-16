@@ -77,7 +77,7 @@ public class CaptchaView extends TextView {
 	}
 
 	/**
-	 * set pattern
+	 * set captcha pattern
 	 * 
 	 * @param pattern
 	 */
@@ -85,6 +85,11 @@ public class CaptchaView extends TextView {
 		this.pattern = pattern;
 	}
 
+	/**
+	 * set length
+	 * 
+	 * @param length
+	 */
 	public void setLength(int length) {
 		this.length = length;
 	}
