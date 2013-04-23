@@ -1,4 +1,4 @@
-library/bin/
-library/gen/
-samples/bin/
-samples/gen/
+/library/bin
+/library/gen
+/samples/bin
+/samples/gen
